@@ -1,4 +1,6 @@
 import os
+import time
+
 import flask
 import mcstatus
 import dotenv
@@ -6,10 +8,11 @@ import subprocess
 import traceback
 
 server_db = {
-    'lobby': {'host': '127.0.0.1', 'rcon_port': 25766, 'port': 25566},
-    'survival': {'host': '127.0.0.1', 'rcon_port': 25767, 'port': 25567},
-    'boxpvp': {'host': '127.0.0.1', 'rcon_port': 25768, 'port': 25568},
-    'dev': {'host': '127.0.0.1', 'rcon_port': 25769, 'port': 25569}
+    'lobby': {'host': '127.0.0.1', 'port': 25566},
+    'survival': {'host': '127.0.0.1', 'port': 25567},
+    'boxpvp': {'host': '127.0.0.1', 'port': 25568},
+    'dev': {'host': '127.0.0.1', 'port': 25569},
+  #  'bungee': {'host': '127.0.0.1', 'port': 25565}
 }
 
 dotenv.load_dotenv()
@@ -56,10 +59,18 @@ def main():
 
 @app.route("/manage/<server_name>/<operation>", methods=['POST'])
 def manage_server(server_name, operation):
+    if server_name == "bungee":
+        if operation == "stop":
+            subprocess.Popen(["screen", "-S", "bungee", '-X', 'stuff', "$'\003'"])
+        elif operation == "restart":
+            subprocess.Popen(["screen", "-S", "bungee", '-X', 'stuff', "$'\003'"])
+            time.sleep(5)
+            subprocess.Popen([""])
+
     if operation == "stop":
-        subprocess.Popen(["screen", "-S", f"{server_name}", "-X stuff", '"stop\n"'])
+        subprocess.Popen(["screen", "-S", f"{server_name}", "-X", "stuff", 'stop\n'])
     elif operation == "restart":
-        subprocess.Popen(["screen", "-S", f"{server_name}", "-X stuff", '"restart\n"'])
+        subprocess.Popen(["screen", "-S", f"{server_name}", "-X", "stuff", 'restart\n'])
     elif operation == 'start':
         subprocess.Popen([f'/mc_scripts/{server_name}.sh'], stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)

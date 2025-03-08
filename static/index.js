@@ -1,7 +1,11 @@
 window.onload = async () => {
     // pobranie statusow serwerow mc
-    let resp = await fetch("/getServerStatus/all")
-    resp = await resp.json()
+    try {
+        var resp = await fetch("/getServerStatus/all")
+        resp = await resp.json()
+    } catch (e) {
+        console.error(`Podczas proby pobrania statusow serwerow, wystapil blad: ${e}`)
+    }
 
     Object.entries(resp).forEach(data => {
         const server_name = data[0]
@@ -15,7 +19,11 @@ window.onload = async () => {
     const server_control_buttons = document.querySelectorAll(".server_item button")
     server_control_buttons.forEach((button) => {
         console.log(button)
-        bind_function_to_button(button)
+        try {
+            bind_function_to_button(button)
+        } catch (e){
+            console.error(`Nie mozna przypisac funkcji do przycisku ${button}: ${e}`)
+        }
     })
 
 }
