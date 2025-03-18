@@ -1,137 +1,132 @@
-.leftmenu {
-    background-color: #1d1d1d;
-    height: 100vh;
+* {
+    color: white;
 }
 
 .server_list {
-    background-color: #2a2a2a;
-    height: 100vh;
-
-    display: flex;
-    flex-flow: column;
-
-    padding: 20px 30px;
-
-}
-
-.ecmc_name {
-    color: #ffff01;
-}
-
-.server_item {
-    width: 100%;
     background-color: #1d1d1d;
-    min-height: 50px;
-    height: fit-content;
-    border-radius: 10px;
-
-    display: flex;
-    flex-flow: row;
-
-    align-items: center;
-
-    margin-bottom: 10px;
-    padding: 5px 20px;
-    color: white;
-
-    position: relative;
+    height: 92vh;
 }
 
-.server_item * {
-    margin: 0;
+.controls {
+    background-color: #1d1d1d;
+    height: 8vh;
+    display: flex;
+    justify-content: center;
 }
 
 .buttons {
+    background-color: #333333;
+    height: fit-content;
+    width: fit-content;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-top: -70px;
     position: absolute;
-    right: 20px;
+    animation: buttons_down 1s ease forwards;
+}
+
+@keyframes buttons_down {
+    0% {
+        margin-top: -100px;
+    }
+
+    50% {
+        margin-top: 25px;
+    }
+
+    100% {
+        margin-top: 15px;
+    }
 }
 
 .buttons button {
-    border: 0;
+    width: 120px;
     border-radius: 10px;
-    padding: 5px 10px;
-    background-color: grey;
-    margin: 0 5px;
-    opacity: 0.8;
-    transition: all .3s ease;
-    color: black;
+    border: 0;
+    padding: 5px;
     font-weight: bolder;
+    margin: 0 5px;
 }
 
-.buttons button:hover {
-    opacity: 1;
+.buttons .start {
+    background-color: green;
+    color: white;
+
+    -webkit-box-shadow: 0px 0px 24px 2px rgb(0, 128, 0);
+    -moz-box-shadow: 0px 0px 24px 2px rgb(0, 128, 0);
+    box-shadow: 0px 0px 24px 2px rgb(0, 128, 0);
 }
 
 .buttons .restart {
     background-color: #ffff01;
+    color: black;
+
+    -webkit-box-shadow: 0px 0px 24px 2px rgb(255, 255, 1);
+    -moz-box-shadow: 0px 0px 24px 2px rgb(255, 255, 1);
+    box-shadow: 0px 0px 24px 2px rgb(255, 255, 1);
 }
 
 .buttons .stop {
     background-color: red;
+    color: white;
+
+    -webkit-box-shadow: 0px 0px 24px 2px rgb(255, 0, 0);
+    -moz-box-shadow: 0px 0px 24px 2px rgb(255, 0, 0);
+    box-shadow: 0px 0px 24px 2px rgb(255, 0, 0);
 }
 
-.buttons .start {
+.buttons .kill {
+    background-color: purple;
+
+    -webkit-box-shadow: 0px 0px 24px 2px rgb(128, 0, 128);
+    -moz-box-shadow: 0px 0px 24px 2px rgb(128, 0, 128);
+    box-shadow: 0px 0px 24px 2px rgb(128, 0, 128);
+}
+
+.off, .on, .unknown {
+    width: 100%;
+    height: 15px;
+    border-radius: 10px;
+}
+
+.off {
+    background-color: red;
+    box-shadow: 0px 0px 24px 2px rgb(255, 0, 0);
+}
+
+.on {
     background-color: #53ff00;
+    box-shadow: 0px 0px 24px 2px rgb(83, 255, 0);
+
 }
 
-.buttons .terminal {
-    background-color: black;
-    color: white;
+.unknown {
+    background-color: dimgrey;
+    box-shadow: 0px 0px 24px 2px rgb(105, 105, 105);
+
 }
 
-.server_states {
-    color: white;
-}
-
-.server_states table {
-    text-align: center;
-}
-
-
-.server_states table, .server_states tr, .server_states td, .server_states th {
-    border: 1px solid white;
+table, thead, tbody, td, th {
+    border: 2px solid #333333;
     border-collapse: collapse;
 }
 
-.server_states td {
-    vertical-align: middle;
+table {
+    text-align: center;
+    width: 600px !important;
+    font-size: 1.3em;
 }
 
-.server_states .state_display {
-    width: 100%;
-    height: 20px;
-    border-radius: 10px;
+.server_list {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.server_states .unknown {
-    background-color: dimgrey;
-}
-
-.server_states .off {
-    background-color: red;
-
-
-}.server_states .on {
-    background-color: #53ff00;
-}
-
-.server_details {
-    height: 100vh;
-    background-color: #2a2a2a;
-}
-
-.terminal_display {
-    width: 100%;
-    height: 300px;
-    background-color: black;
+.server_list p {
+    margin-top: 10px;
     color: white;
-    resize: none;
-}
-
-.terminal_input {
-    width: 100%;
-    background-color: #1d1d1d;
-    color: white;
-    border: 0;
-    border-radius: 10px;
+    font-weight: bolder;
+    max-width: 500px;
 }

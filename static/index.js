@@ -1,69 +1,93 @@
-window.onload = async () => {
+async function get_servers() {
     // pobranie statusow serwerow mc
     try {
         var resp = await fetch("/getServerStatus/all")
         resp = await resp.json()
+        console.log(resp)
     } catch (e) {
         console.error(`Podczas proby pobrania statusow serwerow, wystapil blad: ${e}`)
     }
 
-    Object.entries(resp).forEach(data => {
-        const server_name = data[0]
-        const server_ping = data[1]
-        change_server_status(server_name, server_ping)
-    })
+    display_servers(resp)
+}
+
+
+function display_servers(server_list) {
+    for (let server_name in server_list) {
+        let ping = server_list[server_name]
+        const tr = document.createElement("tr")
+        tr.setAttribute('server_name', server_name)
+
+        const checkbox_td = document.createElement("td")
+        const checkbox = document.createElement("input")
+        checkbox.type = "checkbox"
+        checkbox_td.appendChild(checkbox)
+
+        const name_td = document.createElement("td")
+        name_td.textContent = server_name
+
+        const status_td = document.createElement("td")
+        const status = document.createElement("div")
+        status_td.appendChild(status)
+
+        console.log(ping)
+        if (ping == -1) {
+            status.classList.value = "off"
+        } else {
+            status.classList.value = "on"
+        }
+
+        tr.appendChild(checkbox_td)
+        tr.appendChild(name_td)
+        tr.appendChild(status_td)
+
+        document.querySelector("#servers_table tbody").appendChild(tr)
+    }
+}
+
+var allow_command_send = true
+
+async function send_command_to_server(operation) {
+    if (!allow_command_send) return
+    allow_command_send = false
+
+    const server_list = [...document.querySelectorAll("tr:has(td:first-child input[type=checkbox]:checked)")].map(tr => tr.getAttribute("server_name"));
+    console.log(server_list)
+
+    let resp = (await fetch(`/manage/${operation}`, {
+        method: "POST",
+        body: JSON.stringify({'server_list': server_list}),
+        headers: {'Content-Type': 'application/json'}
+    }))
+    resp = await resp.json()
     console.log(resp)
 
-
-    // przypisanie funkcji do przyciskow
-    const server_control_buttons = document.querySelectorAll(".server_item button")
-    server_control_buttons.forEach((button) => {
-        console.log(button)
-        try {
-            bind_function_to_button(button)
-        } catch (e){
-            console.error(`Nie mozna przypisac funkcji do przycisku ${button}: ${e}`)
-        }
-    })
-
-}
-
-function bind_function_to_button(button) {
-    const server_item = button.closest(".server_item")
-    const server_name = server_item.getAttribute("server_name")
-    const button_function = button.classList.value
-    console.log(button_function)
-
-    if (button_function === 'terminal') {
-        console.log(`przypisuje terminal dla serwera ${server_name}`)
-    } else {
-        button.addEventListener('click', () => {
-            manage_server(server_name, button_function)
-        })
+    switch (resp['code']){
+        case 'ok':
+            alert(`Operacja ${operation} na: ${server_list} przebiegła pomyślnie.`)
+            break
+        case 'wrong_screen_name':
+            alert("Nie znaleziono screena. Sprawdź konsolę przeglądarki.")
+            break
+        default:
+            alert(`Nie rozpoznano kodu: ${resp['code']}`)
     }
 
+    clear_displayed_servers()
+    get_servers()
+
+    allow_command_send = true
 }
 
-async function manage_server(server_name, operation) {
-    let resp = await fetch(`/manage/${server_name}/${operation}`, {method: "POST"})
-
-    if (resp.status === 200) {
-        alert(`[OK] Operacja ${operation} na serwerze ${server_name} powiodla sie.`)
-    } else {
-        alert(`[NIE OK] Operacja ${operation} na serwerze ${server_name} NIE powiodla sie.`)
-    }
+function clear_displayed_servers() {
+    document.querySelector("#servers_table tbody").innerHTML = ""
 }
 
+document.querySelector(".controls>.buttons").addEventListener('click', (ev) => {
+    const operation = ev.target.getAttribute("operation")
+    send_command_to_server(operation)
+})
 
-function change_server_status(server_name, server_ping) {
-    let status = 'on'
-
-    if (server_ping < 0) {
-        status = 'off'
-    }
-
-
-    document.getElementById(`${server_name}_status`).classList.value = `state_display ${status}`
-}
+window.onload = get_servers()
 
 

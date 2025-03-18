@@ -16,84 +16,35 @@
 <body>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-2 leftmenu">
-            <h1 class="ecmc_name">ECMC</h1>
+    <div class="row controls">
+        <div class="buttons">
+            <button class="start" operation="start">Uruchom</button>
+            <button class="restart" operation="restart">Zrestartuj</button>
+            <button class="stop" operation="stop">Wyłącz</button>
         </div>
-        <div class="col-lg-6 server_list">
-            <div class="row server_states">
-                <span>Stany serwerów</span>
-                <table>
+    </div>
+    <div class="row">
+        <section class="col-lg-12 server_list">
+            <section class="row">
+                <table id="servers_table">
                     <thead>
-                    <th>Lobby</th>
-                    <th>Survival</th>
-                    <th>Boxpvp</th>
-                    <th>Dev</th>
+                    <th>
+                    </th>
+                    <th>
+                        <span>Nazwa serwera</span>
+                    </th>
+                    <th>
+                        <span>Status</span>
+                    </th>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>
-                            <div id="lobby_status" class="state_display unknown"></div>
-                        </td>
-                        <td>
-                            <div id="survival_status" class="state_display unknown"></div>
-                        </td>
-                        <td>
-                            <div id="boxpvp_status" class="state_display unknown"></div>
-                        </td>
-                        <td>
-                            <div id="dev_status" class="state_display unknown"></div>
-                        </td>
-                    </tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="row">
-                <div class="server_item" server_name="lobby">
-                    <h4>Lobby</h4>
-                    <div class="buttons">
-                        <button class="terminal">Terminal</button>
-                        <button class="restart">Restart</button>
-                        <button class="stop">Stop</button>
-                        <button class="start">Start</button>
-                    </div>
-                </div>
-                <div class="server_item" server_name="survival">
-                    <h4>Survival</h4>
-                    <div class="buttons">
-                        <button class="restart">Restart</button>
-                        <button class="stop">Stop</button>
-                        <button class="start">Start</button>
-                    </div>
-                </div>
-                <div class="server_item" server_name="boxpvp">
-                    <h4>Boxpvp</h4>
-                    <div class="buttons">
-                        <button class="restart">Restart</button>
-                        <button class="stop">Stop</button>
-                        <button class="start">Start</button>
-                    </div>
-                </div>
-                <div class="server_item" server_name="dev">
-                    <h4>Dev</h4>
-                    <div class="buttons">
-                        <button class="restart">Restart</button>
-                        <button class="stop">Stop</button>
-                        <button class="start">Start</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 server_details">
-            <div class="row">
-                <div class="terminal_window">
-                    <textarea class="terminal_display"></textarea>
-                    <input class="terminal_input" type="text">
-                    <p id="terminal_message">Przy uzyciu przycisku Terminal, wybierz serwer dla ktorego chcesz wykonac komende.</p>
-                </div>
-            </div>
-        </div>
+            </section>
+            <p>Aby wykonać operację na serwerze, wybierz serwery z listy przy użyciu checkboxa - następnie wciśnij
+                przycisk operacji który znajduje się na górze ekranu.</p>
 
+        </section>
     </div>
 
 </div>

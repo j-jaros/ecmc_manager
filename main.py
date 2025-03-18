@@ -1,24 +1,18 @@
 import os
 import time
-
 import flask
 import mcstatus
 import dotenv
 import subprocess
 import traceback
-
-server_db = {
-    'lobby': {'host': '127.0.0.1', 'port': 25566},
-    'survival': {'host': '127.0.0.1', 'port': 25567},
-    'boxpvp': {'host': '127.0.0.1', 'port': 25568},
-    'dev': {'host': '127.0.0.1', 'port': 25569},
-  #  'bungee': {'host': '127.0.0.1', 'port': 25565}
-}
+import server_parser
 
 dotenv.load_dotenv()
-RCON_PASSWORD = os.environ.get("rcon_password")
 BIND_IP = os.environ.get("bind_ip")
 BIND_PORT = os.environ.get("bind_port")
+SERVERS_DIRECTORY = os.environ.get("servers_directory")
+
+server_db = server_parser.get_minecraft_servers(SERVERS_DIRECTORY)
 
 app = flask.Flask(__name__)
 
@@ -35,9 +29,9 @@ def get_server_status(server_name='all'):
         for server in server_db:
             try:
                 data = server_db[server]
-                ping = mcstatus.JavaServer.lookup(f"{data['host']}:{data['port']}").ping()
+                ping = mcstatus.JavaServer.lookup(f"{data['server-ip']}:{data['server-port']}").ping()
 
-                result[server] = int(round(float(ping), 2)) * 100
+                result[server] = int(round(float(ping), 2)) * 10
             except (ConnectionRefusedError, TimeoutError, OSError) as ex:
                 result[server] = str(-1)
 
@@ -45,39 +39,51 @@ def get_server_status(server_name='all'):
 
     data = server_db[server_name]
     try:
-        result = mcstatus.JavaServer(data['host'], data['port'])
+        result = mcstatus.JavaServer(data['server-ip'], data['server-port'])
     except (ConnectionRefusedError, TimeoutError, OSError) as ex:
         result = str(-1)
 
     return result
-
 
 @app.route("/")
 def main():
     return flask.render_template("index.html")
 
 
-@app.route("/manage/<server_name>/<operation>", methods=['POST'])
-def manage_server(server_name, operation):
-    if server_name == "bungee":
-        if operation == "stop":
-            subprocess.Popen(["screen", "-S", "bungee", '-X', 'stuff', "$'\003'"])
-        elif operation == "restart":
-            subprocess.Popen(["screen", "-S", "bungee", '-X', 'stuff', "$'\003'"])
-            time.sleep(5)
-            subprocess.Popen([""])
+@app.route("/manage/<operation>", methods=['POST'])
+def manage_server(operation):
 
-    if operation == "stop":
-        subprocess.Popen(["screen", "-S", f"{server_name}", "-X", "stuff", 'stop\n'])
-    elif operation == "restart":
-        subprocess.Popen(["screen", "-S", f"{server_name}", "-X", "stuff", 'restart\n'])
-    elif operation == 'start':
-        subprocess.Popen([f'/mc_scripts/{server_name}.sh'], stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL)
-        return flask.jsonify({'code': 'ok'})
-    else:
-        return flask.jsonify({'code': 'wrongoperation'})
+    server_list = flask.request.json.get("server_list")
+    print(server_list)
+    try:
+        for server_name in server_list:
 
+            screen_name = server_db.get(server_name).get("screen-name", None)
+
+            if operation == "stop":
+                subprocess.Popen(["screen", "-S", f"{screen_name}", "-X", "stuff", '^C'])
+
+            elif operation == "restart":
+                subprocess.Popen(["screen", "-S", f"{screen_name}", "-X", "stuff", '^C'])
+
+                x = 0
+                while x < 10:
+                    x += 1
+                    status = get_server_status(server_name)
+                    if status == -1:
+                        break
+                    time.sleep(1)
+
+                subprocess.Popen([f'/mc_scripts/{server_name}.sh'], stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL)
+
+            elif operation == 'start':
+                subprocess.Popen([f'/mc_scripts/{server_name}.sh'], stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL)
+            else:
+                return flask.jsonify({'code': 'wrongoperation'})
+    except FileNotFoundError as ex:
+        return flask.jsonify({'code': 'wrong_screen_name', 'data': f"{ex}"}), 400
     return flask.jsonify({'code': 'ok'}), 200
 
 
